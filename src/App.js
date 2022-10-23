@@ -53,6 +53,41 @@ function AddDescription(props) {
   )
 }
 
+function AddGroupChat(props) {
+  const [groupChat, setGroupChat] = useState("");
+  const [myPresence, updateMyPresence] = useMyPresence();
+  const addGroupChat = useMutation(({ storage }, groupChat) => {
+    const todo = storage.get("todos").get(props.index)
+    if (!todo.groupChat) {
+      todo.groupChat = groupChat
+    } else {
+      todo.groupChat = todo.groupChat + '\n' + groupChat
+    }
+    
+    storage.get("todos").set(props.index, todo)
+  }, []);
+  return (
+    <input
+        type="text"
+        placeholder="Group chat"
+        value={groupChat}
+        onChange={(e) => {
+          setGroupChat(e.target.value);
+          updateMyPresence({ isTyping: true });
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            updateMyPresence({ isTyping: false });
+            setGroupChat(e.target.value);
+            addGroupChat(groupChat)
+            setGroupChat("");
+          }
+        }}
+        onBlur={() => updateMyPresence({ isTyping: false })}
+      />
+  )
+}
+
 function AddType(props) {
   const addType = useMutation(({ storage }, type) => {
     const todo = storage.get("todos").get(props.index)
@@ -145,9 +180,11 @@ function Room() {
             <div className="description">{todo.description}</div>
             <div className="type">{todo.type}</div>
             <div className="deadline">{todo.deadline}</div>
+            <div className="groupChat">{todo.groupChat}</div>
             <AddDescription index={index}/>
             <AddType index={index}/>
             <AddDeadline index={index}/>
+            <AddGroupChat index={index}/>
             <button
               className="delete_button"
               onClick={() => deleteTodo(index)}
