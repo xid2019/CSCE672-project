@@ -1,7 +1,7 @@
 import { useState, Suspense } from "react";
 import { RoomProvider, useOthers, useUpdateMyPresence, useMyPresence, useStorage, useMutation } from "./liveblocks.config";
 import { LiveList } from "@liveblocks/client";
-
+import TodoCard from "./TodoCard";
 function WhoIsHere() {
   const userCount = useOthers((others) => others.length);
 
@@ -136,7 +136,7 @@ function Room() {
   const [draft, setDraft] = useState("");
   const [myPresence, updateMyPresence] = useMyPresence();
   const todos = useStorage((root) => root.todos);
-
+  console.log(todos);
   const addTodo = useMutation(({ storage }, text) => {
     storage.get("todos").push({ text })
   }, []);
@@ -175,23 +175,24 @@ function Room() {
           }
         }
         return (
-          <div key={index} className="todo_container">
-            <div className="todo">{todo.text}</div>
-            <div className="description">{todo.description}</div>
-            <div className="type">{todo.type}</div>
-            <div className="deadline">{todo.deadline}</div>
-            <div className="groupChat">{todo.groupChat}</div>
-            <AddDescription index={index}/>
-            <AddType index={index}/>
-            <AddDeadline index={index}/>
-            <AddGroupChat index={index}/>
-            <button
-              className="delete_button"
-              onClick={() => deleteTodo(index)}
-            >
-              ✕
-            </button>
-          </div>
+          <TodoCard todo={todo} index={index}/>
+          // <div key={index} className="todo_container">
+          //   <div className="todo">{todo.text}</div>
+          //   <div className="description">{todo.description}</div>
+          //   <div className="type">{todo.type}</div>
+          //   <div className="deadline">{todo.deadline}</div>
+          //   <div className="groupChat">{todo.groupChat}</div>
+          //   <AddDescription index={index}/>
+          //   <AddType index={index}/>
+          //   <AddDeadline index={index}/>
+          //   <AddGroupChat index={index}/>
+          //   <button
+          //     className="delete_button"
+          //     onClick={() => deleteTodo(index)}
+          //   >
+          //     ✕
+          //   </button>
+          // </div>
         );
       })}
     </div>
