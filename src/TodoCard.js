@@ -41,20 +41,14 @@ const TodoCard = (props) => {
     const index = props.index;
     const [expanded, setExpanded] = useState(false);
     const [ddl, setDdl] = useState(dayjs(deadline));
-    const [todoDescription, setTodoDescription] = useState("");
+    const [todoText, setTodoText] = useState("");
     const [myPresence, updateMyPresence] = useMyPresence();
-    const modifyTodo = useMutation(({storage}, idx, draft) => {
+    const modifyTodoText = useMutation(({storage}, idx, draft) => {
         let todo = storage.get("todos").get(idx)
-        todo.description = draft
+        todo.text = draft
         storage.get("todos").set(idx, todo)
     }, []);
 
-    const handleExpandClick = () => {
-        setExpanded(!expanded);
-    };
-    const handleDdlChange = (newValue) => {
-        setDdl(newValue);
-    };
     const modifyDdl = useMutation(({storage}, idx, draft) => {
         console.log("use mututation executed")
         let todo = storage.get("todos").get(idx)
@@ -62,25 +56,29 @@ const TodoCard = (props) => {
         storage.get("todos").set(idx, todo)
         setDdl(draft)
     }, [])
+
+    const handleExpandClick = () => {
+        setExpanded(!expanded);
+    };
     
     return (
         <Card sx={{ maxWidth: 345, bgcolor: "#caf0f8", m:1, p:1 }}>
             <CardContent>
-                <input type="text" placeholder="Description" value={todoDescription}
+                <input type="text" placeholder="Change this Todo text" value={todoText}
                     onChange={(e) => {
-                        setTodoDescription(e.target.value);
+                        setTodoText(e.target.value);
                         updateMyPresence({ isTyping: true });
                     }}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
                             updateMyPresence({ isTyping: false });
-                            modifyTodo(index, todoDescription)
-                            setTodoDescription("");
+                            modifyTodoText(index, todoText)
+                            setTodoText("");
                         }}}
                     onBlur={() => updateMyPresence({ isTyping: false })}
                 />
                 <Typography variant="h5" color="#1565c0">
-                    {description}
+                    {text}
                 </Typography>
             </CardContent>
             <CardActions sx={{ justifyContent: "space-between" }} disableSpacing>
