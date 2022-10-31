@@ -36,52 +36,51 @@ const ExpandMore = styled((props) => {
     })
 }));
 
-function AddDescription(props) {
-    const [description, setDescription] = useState("");
-    const [myPresence, updateMyPresence] = useMyPresence();
-    const addDescription = useMutation(({ storage }, description) => {
-      const todo = storage.get("todos").get(props.index)
-      todo.description = description
-      storage.get("todos").set(props.index, todo)
-    }, []);
-    return (
-        <input
-            type="text"
-            placeholder="Description"
-            value={description}
-            onChange={(e) => {
-                setDescription(e.target.value);
-                updateMyPresence({ isTyping: true });
-            }}
-            onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                updateMyPresence({ isTyping: false });
-                addDescription(description)
-                setDescription("");
-                }
-            }}
-            onBlur={() => updateMyPresence({ isTyping: false })}
-            />
-    )
-}
-
 const TodoCard = (props) => {
-    const [expanded, setExpanded] = React.useState(false);
-    const [ddl, setDdl] = React.useState(dayjs(Date.now()));
+    const {text, description, type, deadline, groupchat} = props.todo;
+    const index = props.index;
+    const [expanded, setExpanded] = useState(false);
+    const [ddl, setDdl] = useState(dayjs(deadline));
+    const [todoDescription, setTodoDescription] = useState("");
+    const [myPresence, updateMyPresence] = useMyPresence();
+    const modifyTodo = useMutation(({storage}, idx, draft) => {
+        let todo = storage.get("todos").get(idx)
+        todo.description = draft
+        storage.get("todos").set(idx, todo)
+    }, []);
+
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
     const handleDdlChange = (newValue) => {
         setDdl(newValue);
     };
-    const {text, description, type, deadline, groupchat} = props.todo;
-    const index = props.index;
+    const modifyDdl = useMutation(({storage}, idx, draft) => {
+        console.log("use mututation executed")
+        let todo = storage.get("todos").get(idx)
+        todo.deadline = draft
+        storage.get("todos").set(idx, todo)
+        setDdl(draft)
+    }, [])
+    
     return (
         <Card sx={{ maxWidth: 345, bgcolor: "#caf0f8", m:1, p:1 }}>
             <CardContent>
-                <AddDescription index={index} />
-                <Typography variant="body2" color="text.secondary">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
+                <input type="text" placeholder="Description" value={todoDescription}
+                    onChange={(e) => {
+                        setTodoDescription(e.target.value);
+                        updateMyPresence({ isTyping: true });
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            updateMyPresence({ isTyping: false });
+                            modifyTodo(index, todoDescription)
+                            setTodoDescription("");
+                        }}}
+                    onBlur={() => updateMyPresence({ isTyping: false })}
+                />
+                <Typography variant="h5" color="#1565c0">
+                    {description}
                 </Typography>
             </CardContent>
             <CardActions sx={{ justifyContent: "space-between" }} disableSpacing>
@@ -91,13 +90,13 @@ const TodoCard = (props) => {
                 </IconButton>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateTimePicker
-                    // label="Set Deadline"
                     value={ddl}
-                    onChange={handleDdlChange}
+                    onChange={(newValue) => {
+                        modifyDdl(index, newValue)
+                    }}
                     renderInput={(params) => <TextField {...params} />}
                 />
                 </LocalizationProvider>
-                {/* <Typography>Oct 5, 22:00, 2022</Typography> */}
             </CardActions>
             <CardActions disableSpacing>
                 <IconButton>

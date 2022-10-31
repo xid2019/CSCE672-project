@@ -175,7 +175,7 @@ function Room() {
           }
         }
         return (
-          <TodoCard todo={todo} index={index}/>
+          <TodoCard todo={todo} key={index} index={index}/>
           // <div key={index} className="todo_container">
           //   <div className="todo">{todo.text}</div>
           //   <div className="description">{todo.description}</div>
