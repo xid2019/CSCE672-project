@@ -1,4 +1,5 @@
 import { useState, Suspense } from "react";
+import dayjs from "dayjs";
 import { RoomProvider, useOthers, useUpdateMyPresence, useMyPresence, useStorage, useMutation } from "./liveblocks.config";
 import { LiveList } from "@liveblocks/client";
 import ColumnView from "./ColumnView";
@@ -25,12 +26,19 @@ function SomeoneIsTyping() {
 }
 
 function Room() {
+  const initialTask = {
+    description: '', 
+    type: 'Features', 
+    deadline: dayjs().add(5, 'day'), 
+    person: 'Nobody', 
+    status: 'Not Started',
+  }
   const [draft, setDraft] = useState("");
   const [myPresence, updateMyPresence] = useMyPresence();
   const todos = useStorage((root) => root.todos);
   console.log(todos);
   const addTodo = useMutation(({ storage }, text) => {
-    storage.get("todos").push({ text })
+    storage.get("todos").push({ text, ...initialTask })
   }, []);
 
   return (

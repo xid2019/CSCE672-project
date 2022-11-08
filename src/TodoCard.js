@@ -90,6 +90,7 @@ const TodoCard = (props) => {
     }, [])
 
     const deleteTodo = useMutation(({storage}, idx) => {
+        console.log(idx)
         storage.get("todos").delete(idx);
     }, [])
 
@@ -166,6 +167,7 @@ const TodoCard = (props) => {
                 <Typography>Progress</Typography>
                 </IconButton>
                 <Select id="todoStatus" value={todoStatus} onChange={(event) => {modifyTodoStatus(index, event.target.value)}}>
+                    <MenuItem value="Not Started">Not Started</MenuItem>
                     <MenuItem value="In Progress">In Progress</MenuItem>
                     <MenuItem value="Testing">Testing</MenuItem>
                     <MenuItem value="Completed">Completed</MenuItem>
