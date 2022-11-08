@@ -1,8 +1,7 @@
 import React from 'react'
-import TodoCard from "./TodoCard";
 import { Box } from '@mui/system';
 import { v4 as uuidv4 } from 'uuid';
-
+import ColumnTask from './ColumnTask.js';
 function groupBy(arr, property) {
     return arr.reduce(function(memo, x) {
         if (!memo[x[property]]) { memo[x[property]] = []; }
@@ -14,24 +13,15 @@ function groupBy(arr, property) {
 const ColumnView = ({todos}) => {
     // put todos into subarrays depending on progress
     const todo_list = groupBy(todos, 'status')
-    console.log(todo_list)
+    const todo_list_key = Object.keys(todo_list);
     return (
         <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                {todos.map((todo, index) => {
-                    let color;
-                    if (todo.deadline) {
-                        const deadline = new Date(todo.deadline);
-                            if (deadline < new Date()){
-                                color = 'red'
-                            }
-                    }
-                    return (
-                        <TodoCard todo={todo} key={uuidv4()} index={index}/>
-                    );
-                })}
-            </Box>
-            
+            {todo_list_key.map((key, index) => {
+                console.log(todo_list[key])
+                return (
+                    <ColumnTask todos={todo_list[key]} />
+                )
+            })}
         </Box>
     )
 }
