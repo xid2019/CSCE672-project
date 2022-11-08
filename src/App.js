@@ -1,7 +1,7 @@
 import { useState, Suspense } from "react";
 import { RoomProvider, useOthers, useUpdateMyPresence, useMyPresence, useStorage, useMutation } from "./liveblocks.config";
 import { LiveList } from "@liveblocks/client";
-import TodoCard from "./TodoCard";
+import ColumnView from "./ColumnView";
 function WhoIsHere() {
   const userCount = useOthers((others) => others.length);
 
@@ -54,18 +54,7 @@ function Room() {
         onBlur={() => updateMyPresence({ isTyping: false })}
       />
       <SomeoneIsTyping />
-      {todos.map((todo, index) => {
-        let color;
-        if (todo.deadline) {
-          const deadline = new Date(todo.deadline);
-          if (deadline < new Date()){
-            color = 'red'
-          }
-        }
-        return (
-          <TodoCard todo={todo} key={index} index={index}/>
-        );
-      })}
+      <ColumnView todos={todos} />
     </div>
   );
 }
