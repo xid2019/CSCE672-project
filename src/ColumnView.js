@@ -1,6 +1,5 @@
 import React from 'react'
 import { Box } from '@mui/system';
-import { v4 as uuidv4 } from 'uuid';
 import ColumnTask from './ColumnTask.js';
 function groupBy(arr, property) {
     return arr.reduce(function(memo, x) {
