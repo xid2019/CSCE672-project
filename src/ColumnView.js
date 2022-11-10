@@ -1,6 +1,7 @@
 import React from 'react'
 import TodoCard from "./TodoCard";
 import { Box } from '@mui/system';
+import { v4 as uuidv4 } from 'uuid';
 
 function groupBy(arr, property) {
     return arr.reduce(function(memo, x) {
@@ -26,7 +27,7 @@ const ColumnView = ({todos}) => {
                             }
                     }
                     return (
-                        <TodoCard todo={todo} key={index} index={index}/>
+                        <TodoCard todo={todo} key={uuidv4()} index={index}/>
                     );
                 })}
             </Box>
