@@ -42,7 +42,7 @@ function Room() {
   }, []);
 
   return (
-    <div className="container">
+    <div className="container" >
       <WhoIsHere />
       <input
         type="text"
