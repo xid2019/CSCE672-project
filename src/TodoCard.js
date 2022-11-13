@@ -37,8 +37,9 @@ const ExpandMore = styled((props) => {
 }));
 
 const TodoCard = (props) => {
-    const {text, description, type, deadline, person, status, groupchat} = props.todo;
+    const {text, task_id, description, type, deadline, person, status, groupchat} = props.todo;
     const index = props.index;
+    const [properties, setProperties] = useState({type, person, status});
     const [expanded, setExpanded] = useState(false);
     const [ddl, setDdl] = useState(dayjs(deadline));
     const [todoText, setTodoText] = useState("");
@@ -47,6 +48,20 @@ const TodoCard = (props) => {
     const [todoPerson, setTodoPerson] = useState(person);
     const [todoStatus, setTodoStatus] = useState(status);
     const [myPresence, updateMyPresence] = useMyPresence();
+
+    const modifyTodoProperty = useMutation(({storage}, task_id, property, draft) => {
+
+        const modified_todo_index = storage.get("todos").findIndex((todo) => (todo.task_id === task_id));
+        const updated_value = { [property]: draft };
+        const temp_todo = {
+            ...storage.get("todos").get(modified_todo_index),
+            ...updated_value
+        };
+        
+        storage.get("todos").set(modified_todo_index, temp_todo)
+        // setProperties(temp_todo)
+    }, [])
+
     const modifyTodoText = useMutation(({storage}, idx, draft) => {
         let todo = storage.get("todos").get(idx)
         todo.text = draft
@@ -138,7 +153,7 @@ const TodoCard = (props) => {
                 <CategoryIcon />
                 <Typography>Task Type</Typography>
                 </IconButton>
-                <Select id="todoType" value={todoType} onChange={(event) => {modifyTodoType(index, event.target.value)}}>
+                <Select id="todoType" value={properties.type} onChange={(event) => {modifyTodoProperty(task_id, 'type', event.target.value)}}>
                     <MenuItem value="Features">Features</MenuItem>
                     <MenuItem value="Testing">Testing</MenuItem>
                     <MenuItem value="Styling">Styling</MenuItem>
@@ -152,7 +167,7 @@ const TodoCard = (props) => {
                 <PersonIcon />
                 <Typography>Assigned To</Typography>
                 </IconButton>
-                <Select id="todoPerson" value={todoPerson} onChange={(event) => {modifyTodoPerson(index, event.target.value)}}>
+                <Select id="todoPerson" value={properties.person} onChange={(event) => {modifyTodoProperty(task_id, 'person', event.target.value)}}>
                     <MenuItem value="Nobody">Nobody</MenuItem>
                     <MenuItem value="Fengyi Wang">Fengyi Wang</MenuItem>
                     <MenuItem value="Jincheng Li">Jincheng Li</MenuItem>
@@ -166,7 +181,7 @@ const TodoCard = (props) => {
                 <DonutLargeIcon />
                 <Typography>Progress</Typography>
                 </IconButton>
-                <Select id="todoStatus" value={todoStatus} onChange={(event) => {modifyTodoStatus(index, event.target.value)}}>
+                <Select id="todoStatus" value={properties.status} onChange={(event) => {modifyTodoProperty(task_id, 'status', event.target.value)}}>
                     <MenuItem value="Not Started">Not Started</MenuItem>
                     <MenuItem value="In Progress">In Progress</MenuItem>
                     <MenuItem value="Testing">Testing</MenuItem>

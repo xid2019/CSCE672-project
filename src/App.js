@@ -3,12 +3,16 @@ import dayjs from "dayjs";
 import { RoomProvider, useOthers, useUpdateMyPresence, useMyPresence, useStorage, useMutation } from "./liveblocks.config";
 import { LiveList } from "@liveblocks/client";
 import ColumnView from "./ColumnView";
+import { v4 as uuidv4 } from 'uuid';
+import { Typography } from "@mui/material";
 function WhoIsHere() {
   const userCount = useOthers((others) => others.length);
 
   return (
-    <div className="who_is_here">
-      There are {userCount} other users online
+    <div className="who_is_here" >
+      <Typography sx={{ fontFamily:'Geneva', color:'#667085', fontSize: 12}}>
+        There are {userCount} other users online
+      </Typography>
     </div>
   );
 }
@@ -38,7 +42,10 @@ function Room() {
   const todos = useStorage((root) => root.todos);
   console.log(todos);
   const addTodo = useMutation(({ storage }, text) => {
-    storage.get("todos").push({ text, ...initialTask })
+    storage.get("todos").push({ 
+      text, 
+      task_id: uuidv4(),
+      ...initialTask })
   }, []);
 
   return (

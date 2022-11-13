@@ -14,12 +14,9 @@ const ColumnView = ({todos}) => {
     const todo_list = groupBy(todos, 'status')
     const todo_list_key = ['Not Started', 'In Progress', 'Testing', 'Completed', 'Canceled']// Object.keys(todo_list);
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', paddingTop: 2, justifyContent: 'flex-start', overflow:'scroll' }}>
             {todo_list_key.map((key, index) => {
-                if(todo_list[key]){ 
-                    return (
-                        <ColumnTask todos={todo_list[key]} />
-                )}
+                return ( <ColumnTask todos={todo_list[key]} title={key}/> )
             })}
         </Box>
     )
