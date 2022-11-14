@@ -12,7 +12,7 @@ const ColumnTask = ({todos, title}) => {
             {todos && 
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     {todos.map((todo, index) => {
-                        return (<TodoCard todo={todo} index={index}/>)
+                        return (<TodoCard todo={todo} index={index} key={todo.task_id}/>)
                     })}
                 </Box>
             }    

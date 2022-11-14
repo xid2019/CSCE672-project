@@ -38,15 +38,10 @@ const ExpandMore = styled((props) => {
 
 const TodoCard = (props) => {
     const {text, task_id, description, type, deadline, person, status, groupchat} = props.todo;
-    const index = props.index;
-    const [properties, setProperties] = useState({type, person, status});
+    const [properties, setProperties] = useState({text, task_id, description, type, deadline, person, status, groupchat});
     const [expanded, setExpanded] = useState(false);
-    const [ddl, setDdl] = useState(dayjs(deadline));
     const [todoText, setTodoText] = useState("");
     const [todoDescription, setTodoDescription] = useState("");
-    const [todoType, setTodoType] = useState(type);
-    const [todoPerson, setTodoPerson] = useState(person);
-    const [todoStatus, setTodoStatus] = useState(status);
     const [myPresence, updateMyPresence] = useMyPresence();
 
     const modifyTodoProperty = useMutation(({storage}, task_id, property, draft) => {
@@ -59,54 +54,13 @@ const TodoCard = (props) => {
         };
         
         storage.get("todos").set(modified_todo_index, temp_todo)
-        // setProperties(temp_todo)
+        setProperties(temp_todo)
     }, [])
 
-    const modifyTodoText = useMutation(({storage}, idx, draft) => {
-        let todo = storage.get("todos").get(idx)
-        todo.text = draft
-        storage.get("todos").set(idx, todo)
-    }, []);
-
-    const modifyDdl = useMutation(({storage}, idx, draft) => {
-        console.log("use mututation executed")
-        let todo = storage.get("todos").get(idx)
-        todo.deadline = draft
-        storage.get("todos").set(idx, todo)
-        setDdl(draft)
-    }, [])
-
-    const modifyTodoDescription = useMutation(({storage}, idx, draft) => {
-        let todo = storage.get("todos").get(idx)
-        todo.description = draft
-        storage.get("todos").set(idx, todo)
-        setTodoDescription("")
-    }, [])
-
-    const modifyTodoType = useMutation(({storage}, idx, draft) => {
-        let todo = storage.get("todos").get(idx)
-        todo.type = draft
-        storage.get("todos").set(idx, todo)
-        setTodoType(draft)
-    }, [])
-
-    const modifyTodoPerson = useMutation(({storage}, idx, draft) => {
-        let todo = storage.get("todos").get(idx)
-        todo.person = draft
-        storage.get("todos").set(idx, todo)
-        setTodoPerson(draft)
-    }, [])
-
-    const modifyTodoStatus = useMutation(({storage}, idx, draft) => {
-        let todo = storage.get("todos").get(idx)
-        todo.status = draft
-        storage.get("todos").set(idx, todo)
-        setTodoStatus(draft)
-    }, [])
-
-    const deleteTodo = useMutation(({storage}, idx) => {
-        console.log(idx)
-        storage.get("todos").delete(idx);
+    const deleteTodo = useMutation(({storage}, task_id) => {
+        const modified_todo_index = storage.get("todos").findIndex((todo) => (todo.task_id === task_id));
+        console.log('index is ', modified_todo_index)
+        storage.get("todos").delete(modified_todo_index);
     }, [])
 
     const handleExpandClick = () => {
@@ -117,14 +71,16 @@ const TodoCard = (props) => {
         <Card sx={{ maxWidth: 345, bgcolor: "#caf0f8", m:1, p:1 }}>
             <CardContent>
                 <input type="text" placeholder="Edit Todo title here" value={todoText}
-                    onChange={(e) => {
+                    onChange={(e) => { 
+                        // useState and backend seperate for text since we have two field to manage, one is edit box the other is actual text
                         setTodoText(e.target.value);
                         updateMyPresence({ isTyping: true });
                     }}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
                             updateMyPresence({ isTyping: false });
-                            modifyTodoText(index, todoText)
+                            // only modify backend todo.text when hitting enter
+                            modifyTodoProperty(task_id, 'text', todoText)
                             setTodoText("");
                         }}}
                     onBlur={() => updateMyPresence({ isTyping: false })}
@@ -140,9 +96,9 @@ const TodoCard = (props) => {
                 </IconButton>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DateTimePicker
-                        value={ddl}
+                        value={properties.deadline}
                         onChange={(newValue) => {
-                            modifyDdl(index, newValue)
+                            modifyTodoProperty(task_id, 'deadline', newValue)
                         }}
                         renderInput={(params) => <TextField {...params} />}
                     />
@@ -189,7 +145,6 @@ const TodoCard = (props) => {
                     <MenuItem value="Canceled">Canceled</MenuItem>
                 </Select>
             </CardActions>
-            
             <CardActions disableSpacing>
                 <IconButton>
                 <DescriptionIcon />
@@ -214,10 +169,13 @@ const TodoCard = (props) => {
                     onBlur={() => updateMyPresence({ isTyping: false })}
                 />
                 <Button 
-                onClick={()=>{
-                    modifyTodoDescription(index, todoDescription)
-                }}
-                variant="contained">Update</Button>
+                    onClick={()=>{
+                        modifyTodoProperty(task_id, 'description', todoDescription)
+                        setTodoDescription("");
+                    }}
+                    variant="contained">
+                    Update
+                </Button>
                 <Typography>
                     {description}
                 </Typography>
@@ -229,7 +187,7 @@ const TodoCard = (props) => {
                 </IconButton>
                 <Button color='error' variant="contained" 
                     onClick={()=>{
-                        deleteTodo(index)
+                        deleteTodo(task_id)
                     }}
                 >Delete this Todo</Button>
             </CardActions>

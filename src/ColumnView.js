@@ -16,7 +16,7 @@ const ColumnView = ({todos}) => {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'row', paddingTop: 2, justifyContent: 'flex-start', overflow:'scroll' }}>
             {todo_list_key.map((key, index) => {
-                return ( <ColumnTask todos={todo_list[key]} title={key}/> )
+                return ( <ColumnTask todos={todo_list[key]} title={key} key={index}/> )
             })}
         </Box>
     )
