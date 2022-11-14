@@ -69,7 +69,7 @@ const TodoCard = (props) => {
     
     return (
         <Card sx={{ maxWidth: 345, bgcolor: "#caf0f8", m:1, p:1 }}>
-            <CardContent>
+            <CardContent sx={{ justifyContent: "space-between", p:1 }}>
                 <input type="text" placeholder="Edit Todo title here" value={todoText}
                     onChange={(e) => { 
                         // useState and backend seperate for text since we have two field to manage, one is edit box the other is actual text
@@ -89,12 +89,12 @@ const TodoCard = (props) => {
                     {text}
                 </Typography>
             </CardContent>
-            <CardActions sx={{ justifyContent: "space-between" }} disableSpacing>
+            <CardActions sx={{ justifyContent: "space-between", p:0 }} disableSpacing>
                 <IconButton>
                 <AccessTimeIcon />
                 <Typography>Deadline</Typography>
                 </IconButton>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}> 
                     <DateTimePicker
                         value={properties.deadline}
                         onChange={(newValue) => {
@@ -104,12 +104,12 @@ const TodoCard = (props) => {
                     />
                 </LocalizationProvider>
             </CardActions>
-            <CardActions sx={{ justifyContent: "space-between" }} disableSpacing>
+            <CardActions sx={{ justifyContent: "space-between", p:0 }} disableSpacing>
                 <IconButton>
                 <CategoryIcon />
                 <Typography>Task Type</Typography>
                 </IconButton>
-                <Select id="todoType" value={properties.type} onChange={(event) => {modifyTodoProperty(task_id, 'type', event.target.value)}}>
+                <Select sx={{ width: 1/2 }} id="todoType" value={properties.type} onChange={(event) => {modifyTodoProperty(task_id, 'type', event.target.value)}}>
                     <MenuItem value="Features">Features</MenuItem>
                     <MenuItem value="Testing">Testing</MenuItem>
                     <MenuItem value="Styling">Styling</MenuItem>
@@ -118,12 +118,12 @@ const TodoCard = (props) => {
                     <MenuItem value="Others">Others</MenuItem>
                 </Select>
             </CardActions>
-            <CardActions sx={{ justifyContent: "space-between" }} disableSpacing>
+            <CardActions sx={{ justifyContent: "space-between", p:0 }} disableSpacing>
                 <IconButton>
                 <PersonIcon />
                 <Typography>Assigned To</Typography>
                 </IconButton>
-                <Select id="todoPerson" value={properties.person} onChange={(event) => {modifyTodoProperty(task_id, 'person', event.target.value)}}>
+                <Select sx={{ width: 1/2 }} id="todoPerson" value={properties.person} onChange={(event) => {modifyTodoProperty(task_id, 'person', event.target.value)}}>
                     <MenuItem value="Nobody">Nobody</MenuItem>
                     <MenuItem value="Fengyi Wang">Fengyi Wang</MenuItem>
                     <MenuItem value="Jincheng Li">Jincheng Li</MenuItem>
@@ -132,12 +132,12 @@ const TodoCard = (props) => {
                     <MenuItem value="Zihan Wang">Zihan Wang</MenuItem>
                 </Select>
             </CardActions>
-            <CardActions sx={{ justifyContent: "space-between" }} disableSpacing>
+            <CardActions sx={{ justifyContent: "space-between", p:0 }} disableSpacing>
                 <IconButton>
                 <DonutLargeIcon />
                 <Typography>Progress</Typography>
                 </IconButton>
-                <Select id="todoStatus" value={properties.status} onChange={(event) => {modifyTodoProperty(task_id, 'status', event.target.value)}}>
+                <Select sx={{ width: 1/2 }} id="todoStatus" value={properties.status} onChange={(event) => {modifyTodoProperty(task_id, 'status', event.target.value)}}>
                     <MenuItem value="Not Started">Not Started</MenuItem>
                     <MenuItem value="In Progress">In Progress</MenuItem>
                     <MenuItem value="Testing">Testing</MenuItem>
@@ -145,7 +145,7 @@ const TodoCard = (props) => {
                     <MenuItem value="Canceled">Canceled</MenuItem>
                 </Select>
             </CardActions>
-            <CardActions disableSpacing>
+            <CardActions sx={{ justifyContent: "space-between", p:0 }} disableSpacing>
                 <IconButton>
                 <DescriptionIcon />
                 <Typography>Details</Typography>
@@ -181,7 +181,7 @@ const TodoCard = (props) => {
                 </Typography>
                 </CardContent>
             </Collapse>
-            <CardActions sx={{ justifyContent: "space-between" }} disableSpacing>
+            <CardActions sx={{ justifyContent: "space-between", p:0 }} disableSpacing>
                 <IconButton>
                     <DeleteIcon />
                 </IconButton>
