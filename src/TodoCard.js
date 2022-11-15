@@ -37,60 +37,30 @@ const ExpandMore = styled((props) => {
 }));
 
 const TodoCard = (props) => {
-    const {text, description, type, deadline, person, status, groupchat} = props.todo;
-    const index = props.index;
+    const {text, task_id, description, type, deadline, person, status, groupchat} = props.todo;
+    const [properties, setProperties] = useState({text, task_id, description, type, deadline, person, status, groupchat});
     const [expanded, setExpanded] = useState(false);
-    const [ddl, setDdl] = useState(dayjs(deadline));
     const [todoText, setTodoText] = useState("");
     const [todoDescription, setTodoDescription] = useState("");
-    const [todoType, setTodoType] = useState(type);
-    const [todoPerson, setTodoPerson] = useState(person);
-    const [todoStatus, setTodoStatus] = useState(status);
     const [myPresence, updateMyPresence] = useMyPresence();
-    const modifyTodoText = useMutation(({storage}, idx, draft) => {
-        let todo = storage.get("todos").get(idx)
-        todo.text = draft
-        storage.get("todos").set(idx, todo)
-    }, []);
 
-    const modifyDdl = useMutation(({storage}, idx, draft) => {
-        console.log("use mututation executed")
-        let todo = storage.get("todos").get(idx)
-        todo.deadline = draft
-        storage.get("todos").set(idx, todo)
-        setDdl(draft)
+    const modifyTodoProperty = useMutation(({storage}, task_id, property, draft) => {
+
+        const modified_todo_index = storage.get("todos").findIndex((todo) => (todo.task_id === task_id));
+        const updated_value = { [property]: draft };
+        const temp_todo = {
+            ...storage.get("todos").get(modified_todo_index),
+            ...updated_value
+        };
+        
+        storage.get("todos").set(modified_todo_index, temp_todo)
+        setProperties(temp_todo)
     }, [])
 
-    const modifyTodoDescription = useMutation(({storage}, idx, draft) => {
-        let todo = storage.get("todos").get(idx)
-        todo.description = draft
-        storage.get("todos").set(idx, todo)
-        setTodoDescription("")
-    }, [])
-
-    const modifyTodoType = useMutation(({storage}, idx, draft) => {
-        let todo = storage.get("todos").get(idx)
-        todo.type = draft
-        storage.get("todos").set(idx, todo)
-        setTodoType(draft)
-    }, [])
-
-    const modifyTodoPerson = useMutation(({storage}, idx, draft) => {
-        let todo = storage.get("todos").get(idx)
-        todo.person = draft
-        storage.get("todos").set(idx, todo)
-        setTodoPerson(draft)
-    }, [])
-
-    const modifyTodoStatus = useMutation(({storage}, idx, draft) => {
-        let todo = storage.get("todos").get(idx)
-        todo.status = draft
-        storage.get("todos").set(idx, todo)
-        setTodoStatus(draft)
-    }, [])
-
-    const deleteTodo = useMutation(({storage}, idx) => {
-        storage.get("todos").delete(idx);
+    const deleteTodo = useMutation(({storage}, task_id) => {
+        const modified_todo_index = storage.get("todos").findIndex((todo) => (todo.task_id === task_id));
+        console.log('index is ', modified_todo_index)
+        storage.get("todos").delete(modified_todo_index);
     }, [])
 
     const handleExpandClick = () => {
@@ -99,16 +69,18 @@ const TodoCard = (props) => {
     
     return (
         <Card sx={{ maxWidth: 345, bgcolor: "#caf0f8", m:1, p:1 }}>
-            <CardContent>
+            <CardContent sx={{ justifyContent: "space-between", p:1 }}>
                 <input type="text" placeholder="Edit Todo title here" value={todoText}
-                    onChange={(e) => {
+                    onChange={(e) => { 
+                        // useState and backend seperate for text since we have two field to manage, one is edit box the other is actual text
                         setTodoText(e.target.value);
                         updateMyPresence({ isTyping: true });
                     }}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
                             updateMyPresence({ isTyping: false });
-                            modifyTodoText(index, todoText)
+                            // only modify backend todo.text when hitting enter
+                            modifyTodoProperty(task_id, 'text', todoText)
                             setTodoText("");
                         }}}
                     onBlur={() => updateMyPresence({ isTyping: false })}
@@ -117,27 +89,27 @@ const TodoCard = (props) => {
                     {text}
                 </Typography>
             </CardContent>
-            <CardActions sx={{ justifyContent: "space-between" }} disableSpacing>
+            <CardActions sx={{ justifyContent: "space-between", p:0 }} disableSpacing>
                 <IconButton>
                 <AccessTimeIcon />
                 <Typography>Deadline</Typography>
                 </IconButton>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}> 
                     <DateTimePicker
-                        value={ddl}
+                        value={properties.deadline}
                         onChange={(newValue) => {
-                            modifyDdl(index, newValue)
+                            modifyTodoProperty(task_id, 'deadline', newValue)
                         }}
                         renderInput={(params) => <TextField {...params} />}
                     />
                 </LocalizationProvider>
             </CardActions>
-            <CardActions sx={{ justifyContent: "space-between" }} disableSpacing>
+            <CardActions sx={{ justifyContent: "space-between", p:0 }} disableSpacing>
                 <IconButton>
                 <CategoryIcon />
                 <Typography>Task Type</Typography>
                 </IconButton>
-                <Select id="todoType" value={todoType} onChange={(event) => {modifyTodoType(index, event.target.value)}}>
+                <Select sx={{ width: 1/2 }} id="todoType" value={properties.type} onChange={(event) => {modifyTodoProperty(task_id, 'type', event.target.value)}}>
                     <MenuItem value="Features">Features</MenuItem>
                     <MenuItem value="Testing">Testing</MenuItem>
                     <MenuItem value="Styling">Styling</MenuItem>
@@ -146,12 +118,12 @@ const TodoCard = (props) => {
                     <MenuItem value="Others">Others</MenuItem>
                 </Select>
             </CardActions>
-            <CardActions sx={{ justifyContent: "space-between" }} disableSpacing>
+            <CardActions sx={{ justifyContent: "space-between", p:0 }} disableSpacing>
                 <IconButton>
                 <PersonIcon />
                 <Typography>Assigned To</Typography>
                 </IconButton>
-                <Select id="todoPerson" value={todoPerson} onChange={(event) => {modifyTodoPerson(index, event.target.value)}}>
+                <Select sx={{ width: 1/2 }} id="todoPerson" value={properties.person} onChange={(event) => {modifyTodoProperty(task_id, 'person', event.target.value)}}>
                     <MenuItem value="Nobody">Nobody</MenuItem>
                     <MenuItem value="Fengyi Wang">Fengyi Wang</MenuItem>
                     <MenuItem value="Jincheng Li">Jincheng Li</MenuItem>
@@ -160,20 +132,20 @@ const TodoCard = (props) => {
                     <MenuItem value="Zihan Wang">Zihan Wang</MenuItem>
                 </Select>
             </CardActions>
-            <CardActions sx={{ justifyContent: "space-between" }} disableSpacing>
+            <CardActions sx={{ justifyContent: "space-between", p:0 }} disableSpacing>
                 <IconButton>
                 <DonutLargeIcon />
                 <Typography>Progress</Typography>
                 </IconButton>
-                <Select id="todoStatus" value={todoStatus} onChange={(event) => {modifyTodoStatus(index, event.target.value)}}>
+                <Select sx={{ width: 1/2 }} id="todoStatus" value={properties.status} onChange={(event) => {modifyTodoProperty(task_id, 'status', event.target.value)}}>
+                    <MenuItem value="Not Started">Not Started</MenuItem>
                     <MenuItem value="In Progress">In Progress</MenuItem>
                     <MenuItem value="Testing">Testing</MenuItem>
                     <MenuItem value="Completed">Completed</MenuItem>
                     <MenuItem value="Canceled">Canceled</MenuItem>
                 </Select>
             </CardActions>
-            
-            <CardActions disableSpacing>
+            <CardActions sx={{ justifyContent: "space-between", p:0 }} disableSpacing>
                 <IconButton>
                 <DescriptionIcon />
                 <Typography>Details</Typography>
@@ -197,22 +169,25 @@ const TodoCard = (props) => {
                     onBlur={() => updateMyPresence({ isTyping: false })}
                 />
                 <Button 
-                onClick={()=>{
-                    modifyTodoDescription(index, todoDescription)
-                }}
-                variant="contained">Update</Button>
+                    onClick={()=>{
+                        modifyTodoProperty(task_id, 'description', todoDescription)
+                        setTodoDescription("");
+                    }}
+                    variant="contained">
+                    Update
+                </Button>
                 <Typography>
                     {description}
                 </Typography>
                 </CardContent>
             </Collapse>
-            <CardActions sx={{ justifyContent: "space-between" }} disableSpacing>
+            <CardActions sx={{ justifyContent: "space-between", p:0 }} disableSpacing>
                 <IconButton>
                     <DeleteIcon />
                 </IconButton>
                 <Button color='error' variant="contained" 
                     onClick={()=>{
-                        deleteTodo(index)
+                        deleteTodo(task_id)
                     }}
                 >Delete this Todo</Button>
             </CardActions>

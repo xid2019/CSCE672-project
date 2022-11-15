@@ -1,13 +1,18 @@
 import { useState, Suspense } from "react";
+import dayjs from "dayjs";
 import { RoomProvider, useOthers, useUpdateMyPresence, useMyPresence, useStorage, useMutation } from "./liveblocks.config";
 import { LiveList } from "@liveblocks/client";
-import TodoCard from "./TodoCard";
+import ColumnView from "./ColumnView";
+import { v4 as uuidv4 } from 'uuid';
+import { Typography } from "@mui/material";
 function WhoIsHere() {
   const userCount = useOthers((others) => others.length);
 
   return (
-    <div className="who_is_here">
-      There are {userCount} other users online
+    <div className="who_is_here" >
+      <Typography sx={{ fontFamily:'Geneva', color:'#667085', fontSize: 12}}>
+        There are {userCount} other users online
+      </Typography>
     </div>
   );
 }
@@ -25,16 +30,26 @@ function SomeoneIsTyping() {
 }
 
 function Room() {
+  const initialTask = {
+    description: '', 
+    type: 'Features', 
+    deadline: dayjs().add(5, 'day'), 
+    person: 'Nobody', 
+    status: 'Not Started',
+  }
   const [draft, setDraft] = useState("");
   const [myPresence, updateMyPresence] = useMyPresence();
   const todos = useStorage((root) => root.todos);
   console.log(todos);
   const addTodo = useMutation(({ storage }, text) => {
-    storage.get("todos").push({ text })
+    storage.get("todos").push({ 
+      text, 
+      task_id: uuidv4(),
+      ...initialTask })
   }, []);
 
   return (
-    <div className="container">
+    <div className="container" >
       <WhoIsHere />
       <input
         type="text"
@@ -54,18 +69,7 @@ function Room() {
         onBlur={() => updateMyPresence({ isTyping: false })}
       />
       <SomeoneIsTyping />
-      {todos.map((todo, index) => {
-        let color;
-        if (todo.deadline) {
-          const deadline = new Date(todo.deadline);
-          if (deadline < new Date()){
-            color = 'red'
-          }
-        }
-        return (
-          <TodoCard todo={todo} key={index} index={index}/>
-        );
-      })}
+      <ColumnView todos={todos} />
     </div>
   );
 }
