@@ -1,12 +1,13 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
+import { StyledEngineProvider } from '@mui/material/styles';
 import "./App.css";
 
 let roomId = "react-todo-list";
 overrideRoomId();
 
 const root = createRoot(document.getElementById("root"));
-root.render(<App roomId={roomId} />);
+root.render(<StyledEngineProvider injectFirst><App roomId={roomId} /></StyledEngineProvider>);
 
 /**
  * This function is used when deploying an example on liveblocks.io.
