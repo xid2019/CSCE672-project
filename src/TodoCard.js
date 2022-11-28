@@ -24,6 +24,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import MenuItem from '@mui/material/MenuItem';
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import Badge from '@mui/material/Badge';
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -45,16 +46,21 @@ const TodoCard = (props) => {
     const [myPresence, updateMyPresence] = useMyPresence();
     
     const daysToDeadline = dayjs(deadline).diff(dayjs(),'day',true);
-    // console.log("difference is", daysToDeadline, "days")
-    // #e9ecef light grey
-    // #ffbe0b yellow
-    // #f3722c warning
-    var cardcolor = (
-        daysToDeadline <= 0 ? '#f3722c' : // 过ddl变成xx色 
-        daysToDeadline <= 3 ? '#ffbe0b' :// 离ddl小于3天变成xx色 
+
+    const cardColor = (
+        status === "Completed" ? '#B6E2A1' : // status completed
+        status === "Canceled" ? '#65647C' : // status canceled
+        daysToDeadline <= 0 ? '#FF9F9F' : // 过ddl变成xx色 
+        daysToDeadline <= 3 ? '#FCDDB0' :// 离ddl小于3天变成xx色 
         '#e9ecef' // else 默认颜色
     );
 
+    const badgeContent = (
+        status === ("Completed" || "Canceled") ? "" : 
+        daysToDeadline <= 0 ? "Past deadline" : 
+        daysToDeadline <= 3 ? "Due soon" :
+        ""
+    );
 
     const modifyTodoProperty = useMutation(({storage}, task_id, property, draft) => {
 
@@ -80,7 +86,7 @@ const TodoCard = (props) => {
     };
 
     return (
-        <Card sx={{ maxWidth: 345, bgcolor: cardcolor, m:1, p:1 }}>
+        <Card sx={{ maxWidth: 345, bgcolor: cardColor, m:1, p:1 }}>
             <CardContent sx={{ justifyContent: "space-between", p:1 }}>
                 <input type="text" placeholder="Edit Todo title here" value={todoText}
                     onChange={(e) => { 
@@ -97,9 +103,16 @@ const TodoCard = (props) => {
                         }}}
                     onBlur={() => updateMyPresence({ isTyping: false })}
                 />
-                <Typography variant="h5" color="#1565c0">
-                    {text}
-                </Typography>
+                {badgeContent ? 
+                    <Badge badgeContent={badgeContent} color="secondary">
+                        <Typography variant="h5" color="#1565c0">
+                            {text}
+                        </Typography>
+                    </Badge> :
+                    <Typography variant="h5" color="#1565c0">
+                        {text}
+                    </Typography>
+                }
             </CardContent>
             <CardActions sx={{ justifyContent: "space-between", p:0 }} disableSpacing>
                 <IconButton>
