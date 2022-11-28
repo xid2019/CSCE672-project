@@ -15,6 +15,12 @@ body {
   margin-top: 3rem;
 }
 
+#inputtitle {
+  font-size:x-large;
+  font-family: 'Arial';
+  font-weight: bold;
+}
+
 input {
   appearance: none;
   box-sizing: border-box;
@@ -28,7 +34,7 @@ input {
   color: black;
   border: 0 solid;
   font-size: 12px;
-  font-family:'Geneva'
+  font-family:'Arial';
 }
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: #667085;

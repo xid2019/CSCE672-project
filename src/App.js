@@ -10,7 +10,7 @@ function WhoIsHere() {
 
   return (
     <div className="who_is_here" >
-      <Typography sx={{ fontFamily:'Geneva', color:'#667085', fontSize: 12}}>
+      <Typography sx={{ fontFamily:'Arial', color:'#667085', fontSize: 16, fontWeight: 'bold'}}>
         There are {userCount} other users online
       </Typography>
     </div>
@@ -53,6 +53,7 @@ function Room() {
       <WhoIsHere />
       <input
         type="text"
+        id="inputtitle"
         placeholder="What needs to be done?"
         value={draft}
         onChange={(e) => {

@@ -43,6 +43,18 @@ const TodoCard = (props) => {
     const [todoText, setTodoText] = useState("");
     const [todoDescription, setTodoDescription] = useState("");
     const [myPresence, updateMyPresence] = useMyPresence();
+    
+    const daysToDeadline = dayjs(deadline).diff(dayjs(),'day',true);
+    // console.log("difference is", daysToDeadline, "days")
+    // #e9ecef light grey
+    // #ffbe0b yellow
+    // #f3722c warning
+    var cardcolor = (
+        daysToDeadline <= 0 ? '#f3722c' : // 过ddl变成xx色 
+        daysToDeadline <= 3 ? '#ffbe0b' :// 离ddl小于3天变成xx色 
+        '#e9ecef' // else 默认颜色
+    );
+
 
     const modifyTodoProperty = useMutation(({storage}, task_id, property, draft) => {
 
@@ -66,9 +78,9 @@ const TodoCard = (props) => {
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
-    
+
     return (
-        <Card sx={{ maxWidth: 345, bgcolor: "#caf0f8", m:1, p:1 }}>
+        <Card sx={{ maxWidth: 345, bgcolor: cardcolor, m:1, p:1 }}>
             <CardContent sx={{ justifyContent: "space-between", p:1 }}>
                 <input type="text" placeholder="Edit Todo title here" value={todoText}
                     onChange={(e) => { 
