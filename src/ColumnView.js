@@ -1,6 +1,8 @@
 import React from 'react'
 import { Box } from '@mui/system';
 import ColumnTask from './ColumnTask.js';
+import { useState } from "react";
+
 function groupBy(arr, property) {
     return arr.reduce(function(memo, x) {
         if (!memo[x[property]]) { memo[x[property]] = []; }
@@ -9,14 +11,19 @@ function groupBy(arr, property) {
     }, {});
 }
 
+const foo1 = () => {
+    console.log("Foo1 called");
+}
+
 const ColumnView = ({todos}) => {
     // put todos into subarrays depending on progress
+    const [filteredTodos, setFilteredTodos] = useState(todos)
     const todo_list = groupBy(todos, 'status')
     const todo_list_key = ['Not Started', 'In Progress', 'Testing', 'Completed', 'Canceled']// Object.keys(todo_list);
     return (
         <Box sx={{ display: 'flex', flexDirection: 'row', paddingTop: 2, justifyContent: 'flex-start', overflow:'scroll' }}>
             {todo_list_key.map((key, index) => {
-                return ( <ColumnTask todos={todo_list[key]} title={key} key={index}/> )
+                return ( <ColumnTask filterTodos={foo1} todos={todo_list[key]} title={key} key={index}/> )
             })}
         </Box>
     )
