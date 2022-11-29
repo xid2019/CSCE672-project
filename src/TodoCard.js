@@ -37,8 +37,7 @@ const ExpandMore = styled((props) => {
     })
 }));
 
-const TodoCard = ({filterTodos, todo}) => {
-    // const filteredTodos = props.filteredTodos;
+const TodoCard = ({todo}) => {
     const {text, task_id, description, type, deadline, person, status, groupchat} = todo;
     const [properties, setProperties] = useState({text, task_id, description, type, deadline, person, status, groupchat});
     const [expanded, setExpanded] = useState(false);

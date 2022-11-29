@@ -3,7 +3,7 @@ import { Box } from '@mui/system';
 import { Paper, Typography } from '@mui/material';
 import TodoCard from "./TodoCard";
 
-const ColumnTask = ({filterTodos, todos, title}) => {
+const ColumnTask = ({todos, title}) => {
     return (
         <Paper sx={{ marginRight: 2, flexGrow: 0, flexShrink: 0, width: 375 }}>
             <Typography sx={{ fontFamily:'Arial', fontWeight: 'bold', color:'#667085', margin: 1.5, marginBottom: 0 }}>
@@ -12,7 +12,7 @@ const ColumnTask = ({filterTodos, todos, title}) => {
             {todos && 
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     {todos.map((todo, index) => {
-                        return (<TodoCard filterTodos={filterTodos} todo={todo} index={index} key={todo.task_id}/>)
+                        return (<TodoCard todo={todo} index={index} key={todo.task_id}/>)
                     })}
                 </Box>
             }    
