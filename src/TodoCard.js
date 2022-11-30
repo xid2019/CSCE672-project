@@ -56,12 +56,12 @@ const TodoCard = ({todo}) => {
     );
 
     const badgeContent = (
-        status === ("Completed" || "Canceled") ? "" : 
+        (status === "Completed" || status === "Canceled") ? "" : 
         daysToDeadline <= 0 ? "Past deadline" : 
         daysToDeadline <= 3 ? "Due soon" :
         ""
     );
-
+    console.log("Status is ", status);
     const modifyTodoProperty = useMutation(({storage}, task_id, property, draft) => {
 
         const modified_todo_index = storage.get("todos").findIndex((todo) => (todo.task_id === task_id));
